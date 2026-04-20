@@ -2,7 +2,7 @@ const https = require('https');
 const fs = require('fs');
 
 // Тестовый режим: если true — парсим только одну страницу
-const TEST_MODE = true;
+const TEST_MODE = false;
 
 const SIGNS = [
   { slug: 'aries',       tag: 'Horo_aries'        },
