@@ -1,0 +1,30 @@
+name: Weekly Horoscope Parser
+
+on:
+  schedule:
+    - cron: '0 4 * * 1'  # каждый понедельник в 4:00 UTC (7:00 МСК)
+  workflow_dispatch:       # запуск вручную для теста
+
+jobs:
+  parse:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run parser
+        run: node parse_horo.js
+
+      - name: Commit and push XML
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add horoscope.xml
+          git diff --staged --quiet || git commit -m "update horoscope $(date +'%Y-%m-%d')"
+          git push
