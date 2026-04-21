@@ -1,0 +1,30 @@
+name: Weekly AV Generator
+
+on:
+  schedule:
+    - cron: '0 4 * * 4'  # каждый четверг в 4:00 UTC (7:00 МСК)
+  workflow_dispatch:       # запуск вручную для теста
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run generator
+        run: node generate.js
+
+      - name: Commit and push results
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add av.xml counter.json
+          git diff --staged --quiet || git commit -m "issue $(date +'%d.%m.%Y')"
+          git push
