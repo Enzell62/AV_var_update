@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Гороскоп v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: #f0f4f8;
+    font-family: 'Nunito', sans-serif;
+    padding: 16px;
+  }
+
+  .sign-slide {
+    width: 390px;
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-position: center;
+    background-color: #ddeeff;
+    border-radius: 16px;
+    overflow: hidden;
+    padding: 18px 20px 20px;
+    margin-bottom: 12px;
+  }
+
+  /* ШАПКА: иконка слева, имя+период справа — всё на одной строке */
+  .row-top {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  .sign-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    object-fit: cover;
+    flex-shrink: 0;
+  }
+
+  .sign-meta {
+    flex: 1;
+  }
+
+
+
+  .sign-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: #111;
+    line-height: 1.1;
+    margin-bottom: 4px;
+  }
+
+  .sign-period {
+    font-size: 12px;
+    color: #555;
+    letter-spacing: 0.5px;
+  }
+
+  /* ТЕКСТ */
+  .sign-text-wrap {
+    background: rgba(255, 255, 255, 0.82);
+    border-radius: 12px;
+    padding: 13px 15px;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0,0,0,0.06);
+  }
+
+  .sign-text {
+    font-size: 13.5px;
+    line-height: 1.65;
+    color: #222;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">Загрузка...</div>
+
+<script>
+const SIGNS = [
+  { tag:'Horo_aries',       ru:'Овен',        icon:'icon_aries.png'       },
+  { tag:'Horo_taurus',      ru:'Телец',       icon:'icon_taurus.png'      },
+  { tag:'Horo_gemini',      ru:'Близнецы',    icon:'icon_gemini.png'      },
+  { tag:'Horo_cancer',      ru:'Рак',         icon:'icon_cancer.png'      },
+  { tag:'Horo_leo',         ru:'Лев',         icon:'icon_leo.png'         },
+  { tag:'Horo_virgo',       ru:'Дева',        icon:'icon_virgo.png'       },
+  { tag:'Horo_libra',       ru:'Весы',        icon:'icon_libra.png'       },
+  { tag:'Horo_scorpio',     ru:'Скорпион',    icon:'icon_scorpio.png'     },
+  { tag:'Horo_sagittarius', ru:'Стрелец',     icon:'icon_sagittarius.png' },
+  { tag:'Horo_capricorn',   ru:'Козерог',     icon:'icon_capricorn.png'   },
+  { tag:'Horo_aquarius',    ru:'Водолей',     icon:'icon_aquarius.png'    },
+  { tag:'Horo_pisces',      ru:'Рыбы',        icon:'icon_pisces.png'      },
+];
+
+function getTag(doc, tag) {
+  const el = doc.getElementsByTagName(tag)[0];
+  return el ? el.textContent.trim() : '';
+}
+
+async function run() {
+  let period = '';
+  let texts = {};
+
+  try {
+    const r = await fetch('av.xml');
+    const xml = await r.text();
+    const doc = new DOMParser().parseFromString(xml, 'application/xml');
+    period = getTag(doc, 'Horo_date');
+    for (const s of SIGNS) texts[s.tag] = getTag(doc, s.tag);
+  } catch(e) {
+    period = '—';
+    for (const s of SIGNS) texts[s.tag] = 'Ошибка загрузки: ' + e.message;
+  }
+
+  let html = '';
+  for (const s of SIGNS) {
+    html += `
+      <div class="sign-slide" id="slide-${s.tag}">
+        <div class="row-top">
+          <img class="sign-icon" src="${s.icon}" alt="${s.ru}">
+          <div class="sign-meta">
+            <div class="sign-name">${s.ru}</div>
+            <div class="sign-period">${period}</div>
+          </div>
+        </div>
+        <div class="sign-text-wrap"><div class="sign-text">${texts[s.tag] || 'Нет данных'}</div></div>
+      </div>`;
+  }
+
+  document.getElementById('app').innerHTML = html;
+}
+
+run();
+</script>
+</body>
+</html>
