@@ -2,7 +2,7 @@ name: Weekly Horoscope Screenshots
 
 on:
   schedule:
-    - cron: '0 6 * * 5'  # пятница 6:00 UTC (9:00 МСК)
+    - cron: '0 5 * * 5'  # пятница 5:00 UTC (8:00 МСК)
   workflow_dispatch:       # ручной запуск для теста
 
 jobs:
@@ -25,7 +25,7 @@ jobs:
             fonts-noto-color-emoji \
             libatk-bridge2.0-0 libcups2 libdrm2 libxkbcommon0 \
             libxcomposite1 libxdamage1 libxfixes3 libxrandr2 \
-            libgbm1 libasound2 libpango-1.0-0 libcairo2
+            libgbm1 libpango-1.0-0 libcairo2
 
       - name: Install Node deps
         run: npm install puppeteer archiver
