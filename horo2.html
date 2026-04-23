@@ -3,77 +3,82 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Гороскоп v2</title>
+<title>Гороскоп</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Nunito:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
-    background: #f0f4f8;
+    background: #e8eef4;
     font-family: 'Nunito', sans-serif;
-    padding: 16px;
+    padding: 12px;
   }
 
+  /* Группа из 3 знаков — это и есть объект для скриншота */
+  .sign-group {
+    width: 390px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+
+  /* Одна карточка знака */
   .sign-slide {
     width: 390px;
     background-image: url('bg.jpg');
     background-size: cover;
     background-position: center;
     background-color: #ddeeff;
-    border-radius: 16px;
+    border-radius: 14px;
     overflow: hidden;
-    padding: 18px 20px 20px;
-    margin-bottom: 12px;
+    padding: 14px 16px 16px;
   }
 
-  /* ШАПКА: иконка слева, имя+период справа — всё на одной строке */
+  /* Шапка: иконка + имя/период */
   .row-top {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: 14px;
-    margin-bottom: 14px;
+    gap: 12px;
+    margin-bottom: 12px;
   }
 
   .sign-icon {
-    width: 72px;
-    height: 72px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     object-fit: cover;
     flex-shrink: 0;
   }
 
-  .sign-meta {
-    flex: 1;
-  }
-
-
+  .sign-meta { flex: 1; }
 
   .sign-name {
     font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
     color: #111;
     line-height: 1.1;
-    margin-bottom: 4px;
+    margin-bottom: 3px;
   }
 
   .sign-period {
-    font-size: 12px;
+    font-size: 11px;
     color: #555;
     letter-spacing: 0.5px;
   }
 
-  /* ТЕКСТ */
+  /* Подложка под текстом */
   .sign-text-wrap {
     background: rgba(255, 255, 255, 0.82);
-    border-radius: 12px;
-    padding: 13px 15px;
-    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.10), 0 1px 4px rgba(0,0,0,0.06);
+    border-radius: 10px;
+    padding: 11px 13px;
+    box-shadow: 0 3px 14px rgba(0,0,0,0.10), 0 1px 4px rgba(0,0,0,0.06);
   }
 
   .sign-text {
-    font-size: 13.5px;
+    font-size: 12.5px;
     line-height: 1.65;
     color: #222;
   }
@@ -99,9 +104,33 @@ const SIGNS = [
   { tag:'Horo_pisces',      ru:'Рыбы',        icon:'icon_pisces.png'      },
 ];
 
+// Группы по 3 знака — 4 группы итого
+const GROUPS = [
+  { id: 'group-1', signs: SIGNS.slice(0, 3)  },
+  { id: 'group-2', signs: SIGNS.slice(3, 6)  },
+  { id: 'group-3', signs: SIGNS.slice(6, 9)  },
+  { id: 'group-4', signs: SIGNS.slice(9, 12) },
+];
+
 function getTag(doc, tag) {
   const el = doc.getElementsByTagName(tag)[0];
   return el ? el.textContent.trim() : '';
+}
+
+function buildCard(sign, text, period) {
+  return `
+    <div class="sign-slide" id="slide-${sign.tag}">
+      <div class="row-top">
+        <img class="sign-icon" src="${sign.icon}" alt="${sign.ru}">
+        <div class="sign-meta">
+          <div class="sign-name">${sign.ru}</div>
+          <div class="sign-period">${period}</div>
+        </div>
+      </div>
+      <div class="sign-text-wrap">
+        <div class="sign-text">${text || 'Нет данных'}</div>
+      </div>
+    </div>`;
 }
 
 async function run() {
@@ -116,22 +145,16 @@ async function run() {
     for (const s of SIGNS) texts[s.tag] = getTag(doc, s.tag);
   } catch(e) {
     period = '—';
-    for (const s of SIGNS) texts[s.tag] = 'Ошибка загрузки: ' + e.message;
+    for (const s of SIGNS) texts[s.tag] = 'Ошибка: ' + e.message;
   }
 
   let html = '';
-  for (const s of SIGNS) {
-    html += `
-      <div class="sign-slide" id="slide-${s.tag}">
-        <div class="row-top">
-          <img class="sign-icon" src="${s.icon}" alt="${s.ru}">
-          <div class="sign-meta">
-            <div class="sign-name">${s.ru}</div>
-            <div class="sign-period">${period}</div>
-          </div>
-        </div>
-        <div class="sign-text-wrap"><div class="sign-text">${texts[s.tag] || 'Нет данных'}</div></div>
-      </div>`;
+  for (const group of GROUPS) {
+    html += `<div class="sign-group" id="${group.id}">`;
+    for (const sign of group.signs) {
+      html += buildCard(sign, texts[sign.tag], period);
+    }
+    html += `</div>`;
   }
 
   document.getElementById('app').innerHTML = html;
