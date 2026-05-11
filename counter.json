@@ -1,6 +1,11 @@
 {
   "records": [
     {
+      "date": "07.05.2026",
+      "year_num": 20,
+      "global_num": 1690
+    },
+    {
       "date": "30.04.2026",
       "year_num": 19,
       "global_num": 1689
@@ -16,9 +21,9 @@
       "global_num": 1687
     },
     {
-      "date": "07.05.2026",
-      "year_num": 20,
-      "global_num": 1690
+      "date": "14.05.2026",
+      "year_num": 21,
+      "global_num": 1691
     }
   ]
 }
