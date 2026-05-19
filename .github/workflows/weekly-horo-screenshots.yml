@@ -28,7 +28,7 @@ jobs:
             libgbm1 libpango-1.0-0 libcairo2
 
       - name: Install Node deps
-        run: npm install puppeteer archiver
+        run: npm install puppeteer archiver@6
 
       - name: Run screenshot script
         run: node screenshot_horo.js
